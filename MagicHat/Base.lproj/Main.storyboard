@@ -1,27 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13122.16" systemVersion="17A278a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BV1-FR-VrT">
-    <device id="retina4_7" orientation="portrait">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BV1-FR-VrT">
+    <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13104.12"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
         <scene sceneID="tXr-a1-R10">
             <objects>
-                <viewController id="BV1-FR-VrT" customClass="ViewController" customModuleProvider="target" sceneMemberID="viewController">
-                    <arscnView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="BrB-h1-WRS">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                <viewController id="BV1-FR-VrT" customClass="ViewController" customModule="MagicHat" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Zbz-te-qaw">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    </arscnView>
+                        <subviews>
+                            <arscnView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WAR-IB-Xfh">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                                <gestureRecognizers/>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="rul-3H-mzS" appends="YES" id="6WS-PV-Oh8"/>
+                                </connections>
+                            </arscnView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a7d-qs-mgk">
+                                <rect key="frame" x="20" y="708" width="157.66666666666666" height="50"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="tvP-PX-OxE"/>
+                                </constraints>
+                                <state key="normal" title="Magic"/>
+                                <connections>
+                                    <action selector="magicButtonPressed:" destination="BV1-FR-VrT" eventType="touchUpInside" id="Da0-bc-MAv"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3xJ-46-B1W">
+                                <rect key="frame" x="197.66666666666663" y="708" width="157.33333333333337" height="50"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="EUn-JU-ukh"/>
+                                </constraints>
+                                <state key="normal" title="Throw Ball"/>
+                                <connections>
+                                    <action selector="throwBallButtonPressed:" destination="BV1-FR-VrT" eventType="touchUpInside" id="MsW-of-wBX"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="WAR-IB-Xfh" firstAttribute="leading" secondItem="Zbz-te-qaw" secondAttribute="leading" id="4RW-db-7iS"/>
+                            <constraint firstItem="3xJ-46-B1W" firstAttribute="width" secondItem="a7d-qs-mgk" secondAttribute="width" id="6SG-fT-x7H"/>
+                            <constraint firstAttribute="bottom" secondItem="WAR-IB-Xfh" secondAttribute="bottom" id="9My-Sa-EMQ"/>
+                            <constraint firstItem="WAR-IB-Xfh" firstAttribute="top" secondItem="Zbz-te-qaw" secondAttribute="top" id="9xQ-C5-O1G"/>
+                            <constraint firstAttribute="trailing" secondItem="WAR-IB-Xfh" secondAttribute="trailing" id="CLM-yP-J11"/>
+                            <constraint firstItem="aae-RH-9Cw" firstAttribute="trailing" secondItem="3xJ-46-B1W" secondAttribute="trailing" constant="20" id="U2N-sg-C67"/>
+                            <constraint firstItem="aae-RH-9Cw" firstAttribute="bottom" secondItem="a7d-qs-mgk" secondAttribute="bottom" constant="20" id="VTH-zd-8Nj"/>
+                            <constraint firstItem="3xJ-46-B1W" firstAttribute="centerY" secondItem="a7d-qs-mgk" secondAttribute="centerY" id="cfW-RA-8Q5"/>
+                            <constraint firstItem="3xJ-46-B1W" firstAttribute="leading" secondItem="a7d-qs-mgk" secondAttribute="trailing" constant="20" id="eBn-Uo-USb"/>
+                            <constraint firstItem="a7d-qs-mgk" firstAttribute="leading" secondItem="aae-RH-9Cw" secondAttribute="leading" constant="20" id="xqn-PC-lwr"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="aae-RH-9Cw"/>
+                    </view>
                     <connections>
-                        <outlet property="sceneView" destination="BrB-h1-WRS" id="5nT-qQ-ynl"/>
+                        <outlet property="magicButton" destination="a7d-qs-mgk" id="suY-11-wh0"/>
+                        <outlet property="sceneView" destination="WAR-IB-Xfh" id="qk1-yR-p3a"/>
+                        <outlet property="throwBallButton" destination="3xJ-46-B1W" id="jE9-h5-YOe"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SZV-WD-TEh" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="rul-3H-mzS">
+                    <connections>
+                        <action selector="didTap:" destination="BV1-FR-VrT" id="V8Z-as-PIH"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
+            <point key="canvasLocation" x="136.69950738916256" y="132"/>
         </scene>
     </scenes>
 </document>
