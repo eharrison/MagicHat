@@ -10,13 +10,14 @@ import UIKit
 import SceneKit
 import ARKit
 
-class ViewController: UIViewController, ARSCNViewDelegate {
+class ViewController: UIViewController {
 
     @IBOutlet var sceneView: ARSCNView!
     @IBOutlet weak var magicButton: UIButton!
     @IBOutlet weak var throwBallButton: UIButton!
     
-    private var hatNode: SCNNode?
+    fileprivate var hatNode: SCNNode?
+    fileprivate var planeNode: SCNNode?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,10 +51,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
     
     @IBAction func throwBallButtonPressed(_ sender: Any) {
-        if let ballNode = createBallFromScene() {
-            ballNode.physicsBody?.applyForce(SCNVector3Make(0, 0, -3), asImpulse: true)
-            sceneView.scene.rootNode.addChildNode(ballNode)
-        }
+        shootBall()
     }
     
     @IBAction func didTap(_ sender: UITapGestureRecognizer) {
@@ -67,8 +65,11 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             placeHat(result)
         }
     }
-    
-    // MARK: - Hat
+}
+
+// MARK: - Hat Configuration
+
+extension ViewController {
     
     private func placeHat(_ result: ARHitTestResult) {
         
@@ -100,31 +101,45 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         return node
     }
+}
+
+// MARK: - Ball Configuration
+
+extension ViewController {
     
-    // MARK: - Ball
+    fileprivate func shootBall() {
+        guard let ballNode = createBallFromScene() else {
+            return
+        }
+        
+        let camera = self.sceneView.pointOfView!
+        let position = SCNVector3(x: 0, y: 0, z: -0.20)
+        ballNode.position = camera.convertPosition(position, to: nil)
+        ballNode.rotation = camera.rotation
+        
+        let direction = getCameraDirection()
+        let ballDirection = direction
+        ballNode.physicsBody?.applyForce(ballDirection, asImpulse: true)
+        
+        sceneView.scene.rootNode.addChildNode(ballNode)
+    }
     
     private func createBallFromScene() -> SCNNode? {
         guard let url = Bundle.main.url(forResource: "art.scnassets/ball", withExtension: "scn") else {
-            NSLog("Could not find hat scene")
+            NSLog("Could not find ball scene")
             return nil
         }
         guard let node = SCNReferenceNode(url: url) else { return nil }
-        
+
         node.load()
-        
-        // Position scene
-        node.position = getZForward(node: node)
-        
-        return node
+
+        return node.childNode(withName: "sphere", recursively: true)
     }
-    
-    func getZForward(node: SCNNode) -> SCNVector3 {
-        return SCNVector3(node.worldTransform.m31, node.worldTransform.m32, node.worldTransform.m33)
-    }
-    
-    // MARK: - ARSCNViewDelegate
-    
-    private var planeNode: SCNNode?
+}
+
+// MARK: - ARSCNViewDelegate
+
+extension ViewController: ARSCNViewDelegate {
     
     func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
         // Create an SCNNode for a detect ARPlaneAnchor
@@ -168,5 +183,19 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     func sessionInterruptionEnded(_ session: ARSession) {
         // Reset tracking and/or remove existing anchors if consistent tracking is required
         
+    }
+}
+
+// MARK: - User direction
+
+extension ViewController {
+    
+    func getCameraDirection() -> SCNVector3 {
+        if let frame = self.sceneView.session.currentFrame {
+            let mat = SCNMatrix4(frame.camera.transform)
+            let dir = SCNVector3(-2 * mat.m31, -2 * mat.m32, -2 * mat.m33)
+            return dir
+        }
+        return SCNVector3(0, 0, -1)
     }
 }
