@@ -47,6 +47,12 @@
                                     <action selector="throwBallButtonPressed:" destination="BV1-FR-VrT" eventType="touchUpInside" id="MsW-of-wBX"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Place camera next to ground to find a plane for your hat" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fVT-l3-28t">
+                                <rect key="frame" x="50" y="392.33333333333331" width="275" height="28.666666666666686"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -54,16 +60,20 @@
                             <constraint firstItem="3xJ-46-B1W" firstAttribute="width" secondItem="a7d-qs-mgk" secondAttribute="width" id="6SG-fT-x7H"/>
                             <constraint firstAttribute="bottom" secondItem="WAR-IB-Xfh" secondAttribute="bottom" id="9My-Sa-EMQ"/>
                             <constraint firstItem="WAR-IB-Xfh" firstAttribute="top" secondItem="Zbz-te-qaw" secondAttribute="top" id="9xQ-C5-O1G"/>
+                            <constraint firstAttribute="trailing" secondItem="fVT-l3-28t" secondAttribute="trailing" constant="50" id="9z8-eE-Fvp"/>
                             <constraint firstAttribute="trailing" secondItem="WAR-IB-Xfh" secondAttribute="trailing" id="CLM-yP-J11"/>
+                            <constraint firstItem="fVT-l3-28t" firstAttribute="centerY" secondItem="Zbz-te-qaw" secondAttribute="centerY" id="JJx-bZ-7NX"/>
                             <constraint firstItem="aae-RH-9Cw" firstAttribute="trailing" secondItem="3xJ-46-B1W" secondAttribute="trailing" constant="20" id="U2N-sg-C67"/>
                             <constraint firstItem="aae-RH-9Cw" firstAttribute="bottom" secondItem="a7d-qs-mgk" secondAttribute="bottom" constant="20" id="VTH-zd-8Nj"/>
                             <constraint firstItem="3xJ-46-B1W" firstAttribute="centerY" secondItem="a7d-qs-mgk" secondAttribute="centerY" id="cfW-RA-8Q5"/>
                             <constraint firstItem="3xJ-46-B1W" firstAttribute="leading" secondItem="a7d-qs-mgk" secondAttribute="trailing" constant="20" id="eBn-Uo-USb"/>
+                            <constraint firstItem="fVT-l3-28t" firstAttribute="leading" secondItem="aae-RH-9Cw" secondAttribute="leading" constant="50" id="r8K-VC-rHY"/>
                             <constraint firstItem="a7d-qs-mgk" firstAttribute="leading" secondItem="aae-RH-9Cw" secondAttribute="leading" constant="20" id="xqn-PC-lwr"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="aae-RH-9Cw"/>
                     </view>
                     <connections>
+                        <outlet property="instructionsLabel" destination="fVT-l3-28t" id="vod-Sx-Fty"/>
                         <outlet property="magicButton" destination="a7d-qs-mgk" id="suY-11-wh0"/>
                         <outlet property="sceneView" destination="WAR-IB-Xfh" id="qk1-yR-p3a"/>
                         <outlet property="throwBallButton" destination="3xJ-46-B1W" id="jE9-h5-YOe"/>

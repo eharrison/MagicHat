@@ -15,9 +15,10 @@ class SceneViewController: UIViewController {
     @IBOutlet var sceneView: ARSCNView!
     @IBOutlet weak var magicButton: UIButton!
     @IBOutlet weak var throwBallButton: UIButton!
+    @IBOutlet weak var instructionsLabel: UILabel!
     
     fileprivate var hatNode: SCNNode?
-    fileprivate var planeNode: SCNNode?
+    fileprivate var groundNode: SCNNode?
     fileprivate var magicEffectSound: SCNAudioSource!
     
     override func viewDidLoad() {
@@ -25,8 +26,7 @@ class SceneViewController: UIViewController {
         
         configureScene()
         loadSounds()
-        updateMagicButton()
-        updateThrowBallButton()
+        updateUI()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -82,8 +82,7 @@ class SceneViewController: UIViewController {
             addFloor(withResult: result)
         }
         
-        updateThrowBallButton()
-        updateMagicButton()
+        updateUI()
     }
     
     fileprivate func updateMagicButton() {
@@ -94,6 +93,25 @@ class SceneViewController: UIViewController {
     fileprivate func updateThrowBallButton() {
         self.throwBallButton.isEnabled = hatNode != nil
         self.throwBallButton.alpha = hatNode != nil ? 1 : 0.5
+    }
+    
+    fileprivate func updateInstructions() {
+        if hatNode != nil {
+            instructionsLabel.text = ""
+        } else {
+            instructionsLabel.text = "Place camera next to ground, facing forward to find a plane for your hat 🎩"
+        }
+        
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.3, options: .autoreverse, animations: {
+            self.instructionsLabel.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+        }, completion: nil)
+    }
+    
+    fileprivate func updateUI() {
+        
+        updateMagicButton()
+        updateThrowBallButton()
+        updateInstructions()
     }
 }
 
@@ -106,7 +124,6 @@ extension SceneViewController {
         hatNode?.removeFromParentNode()
         hatNode = createHatFromScene(planePosition)
         hatNode?.name = "hat"
-        planeNode?.removeFromParentNode()
         if let hatNode = hatNode {
             sceneView.scene.rootNode.addChildNode(hatNode)
         }
@@ -257,8 +274,8 @@ extension SceneViewController: ARSCNViewDelegate {
         guard let _ = anchor as? ARPlaneAnchor else {
             return nil
         }
-        planeNode = SCNNode()
-        return planeNode
+        groundNode = SCNNode()
+        return groundNode
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
@@ -331,19 +348,6 @@ extension SceneViewController: SCNPhysicsContactDelegate {
     
 }
 
-// MARK: - SCNNode extension
-
-extension SCNNode {
-    
-    var isBall: Bool {
-        return self.name == "ball"
-    }
-    
-    var isHat: Bool {
-        return self.name == "body" || self.name == "base" || self.name == "top" || self.name == "hat"
-    }
-}
-
 // MARK: - User direction
 
 extension SceneViewController {
@@ -355,5 +359,18 @@ extension SceneViewController {
             return dir
         }
         return SCNVector3(0, 0, -1)
+    }
+}
+
+// MARK: - SCNNode extension
+
+extension SCNNode {
+    
+    var isBall: Bool {
+        return self.name == "ball"
+    }
+    
+    var isHat: Bool {
+        return self.name == "body" || self.name == "base" || self.name == "top" || self.name == "hat"
     }
 }
