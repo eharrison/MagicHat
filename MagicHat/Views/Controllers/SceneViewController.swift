@@ -75,6 +75,7 @@ class SceneViewController: UIViewController {
         let results = sceneView.hitTest(location, types: .existingPlaneUsingExtent)
         if let result = results.first {
             placeHat(result)
+            addFloor(withResult: result)
         }
         
         updateThrowBallButton()
@@ -171,8 +172,7 @@ extension SceneViewController {
         ballNode.position = camera.convertPosition(position, to: nil)
         ballNode.rotation = camera.rotation
         
-        let direction = getCameraDirection()
-        let ballDirection = direction
+        let ballDirection = cameraDirection
         ballNode.physicsBody?.applyForce(ballDirection, asImpulse: true)
         
         ballNode.name = "ball"
@@ -191,6 +191,30 @@ extension SceneViewController {
 
         return node.childNode(withName: "sphere", recursively: true)
     }
+}
+
+// MARK: - Floor Configuration
+
+extension SceneViewController {
+    
+    func addFloor(withResult result: ARHitTestResult) {
+        let transform = result.worldTransform
+        let planePosition = SCNVector3Make(transform.columns.3.x, transform.columns.3.y, transform.columns.3.z)
+        let floorNode = createFloorForScene(inPosition: planePosition)!
+        sceneView.scene.rootNode.addChildNode(floorNode)
+    }
+    
+    private func createFloorForScene(inPosition position: SCNVector3) -> SCNNode? {
+        let floorNode = SCNNode()
+        let floor = SCNFloor()
+        floorNode.geometry = floor
+        floorNode.geometry?.firstMaterial?.diffuse.contents = UIColor.clear
+        floorNode.physicsBody = SCNPhysicsBody(type: .static, shape: nil)
+        floorNode.position = position
+        
+        return floorNode
+    }
+    
 }
 
 // MARK: - Sound configuration
@@ -299,12 +323,32 @@ extension SceneViewController: SCNPhysicsContactDelegate {
 
 extension SceneViewController {
     
-    func getCameraDirection() -> SCNVector3 {
+    var cameraDirection: SCNVector3 {
         if let frame = self.sceneView.session.currentFrame {
             let mat = SCNMatrix4(frame.camera.transform)
             let dir = SCNVector3(-2 * mat.m31, -2 * mat.m32, -2 * mat.m33)
             return dir
         }
         return SCNVector3(0, 0, -1)
+    }
+}
+
+// MARK: - Ball inside bounding box verification
+
+extension SceneViewController {
+    func isBallInsideBoundingBox(_ node: SCNNode) -> Bool {
+        
+        guard let hat = sceneView.scene.rootNode.childNode(withName: "hat", recursively: true) else {
+            return false
+        }
+        
+        let min = hat.convertPosition((hat.boundingBox.min), to: sceneView.scene.rootNode)
+        let max = hat.convertPosition((hat.boundingBox.max), to: sceneView.scene.rootNode)
+        
+        if node.presentation.position.x < 0.99*(max.x) && node.presentation.position.x > 0.99*(min.x) && node.presentation.position.y < 0.99*(max.y) && node.presentation.position.y > 0.99*(min.y) && node.presentation.position.z < 0.99*(max.z) && node.presentation.position.z > 0.99*(min.z) {
+            return true
+        }
+        
+        return false
     }
 }
