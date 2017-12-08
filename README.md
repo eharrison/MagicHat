@@ -18,10 +18,10 @@ This repository contains the final exercise of Udacity's "Learn ARKit with Swift
 - Clone repository
 - Run the app on your iOS Device
 - Find a plane on the floor (you should see a white mark)
-![alt text](https://github.com/eharrison/MagicHat/Screenshots/PlaneDetected.PNG)
+![alt text](https://github.com/eharrison/MagicHat/blob/master/Screenshots/PlaneDetected.PNG)
 - Tap on the plane to add the hat
-![alt text](https://github.com/eharrison/MagicHat/Screenshots/HatPlaced.PNG)
+![alt text](https://github.com/eharrison/MagicHat/blob/master/Screenshots/HatPlaced.PNG)
 - Tap 'Throw ball' to throw a ball :)
-![alt text](https://github.com/eharrison/MagicHat/Screenshots/FullHat.PNG)
+![alt text](https://github.com/eharrison/MagicHat/blob/master/Screenshots/FullHat.PNG)
 - Tap 'Magic' to disappear with balls in the hat
-![alt text](https://github.com/eharrison/MagicHat/Screenshots/EmptyHat.PNG)
+![alt text](https://github.com/eharrison/MagicHat/blob/master/Screenshots/EmptyHat.PNG)
