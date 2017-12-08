@@ -9,12 +9,15 @@
 /* Begin PBXBuildFile section */
 		0A968F8E1FD97AE200ED6ED3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A968F8D1FD97AE200ED6ED3 /* AppDelegate.swift */; };
 		0A968F901FD97AE200ED6ED3 /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A968F8F1FD97AE200ED6ED3 /* art.scnassets */; };
-		0A968F921FD97AE200ED6ED3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A968F911FD97AE200ED6ED3 /* ViewController.swift */; };
+		0A968F921FD97AE200ED6ED3 /* SceneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A968F911FD97AE200ED6ED3 /* SceneViewController.swift */; };
 		0A968F951FD97AE200ED6ED3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0A968F931FD97AE200ED6ED3 /* Main.storyboard */; };
 		0A968F971FD97AE200ED6ED3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A968F961FD97AE200ED6ED3 /* Assets.xcassets */; };
 		0A968F9A1FD97AE200ED6ED3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0A968F981FD97AE200ED6ED3 /* LaunchScreen.storyboard */; };
 		0A968FA51FD97AE200ED6ED3 /* MagicHatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A968FA41FD97AE200ED6ED3 /* MagicHatTests.swift */; };
 		0A968FB01FD97AE200ED6ED3 /* MagicHatUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A968FAF1FD97AE200ED6ED3 /* MagicHatUITests.swift */; };
+		0A968FC31FDA0BEB00ED6ED3 /* spark.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A968FC11FDA0BEA00ED6ED3 /* spark.png */; };
+		0A968FC41FDA0BEB00ED6ED3 /* magicEffect.scnp in Resources */ = {isa = PBXBuildFile; fileRef = 0A968FC21FDA0BEB00ED6ED3 /* magicEffect.scnp */; };
+		0A968FC71FDA100000ED6ED3 /* magicEffect.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0A968FC61FDA100000ED6ED3 /* magicEffect.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,7 +41,7 @@
 		0A968F8A1FD97AE200ED6ED3 /* MagicHat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MagicHat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A968F8D1FD97AE200ED6ED3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0A968F8F1FD97AE200ED6ED3 /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
-		0A968F911FD97AE200ED6ED3 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		0A968F911FD97AE200ED6ED3 /* SceneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneViewController.swift; sourceTree = "<group>"; };
 		0A968F941FD97AE200ED6ED3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		0A968F961FD97AE200ED6ED3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0A968F991FD97AE200ED6ED3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -49,6 +52,9 @@
 		0A968FAB1FD97AE200ED6ED3 /* MagicHatUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MagicHatUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A968FAF1FD97AE200ED6ED3 /* MagicHatUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagicHatUITests.swift; sourceTree = "<group>"; };
 		0A968FB11FD97AE200ED6ED3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0A968FC11FDA0BEA00ED6ED3 /* spark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spark.png; sourceTree = "<group>"; };
+		0A968FC21FDA0BEB00ED6ED3 /* magicEffect.scnp */ = {isa = PBXFileReference; lastKnownFileType = file.scp; path = magicEffect.scnp; sourceTree = "<group>"; };
+		0A968FC61FDA100000ED6ED3 /* magicEffect.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = magicEffect.mp3; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,6 +137,8 @@
 			children = (
 				0A968F961FD97AE200ED6ED3 /* Assets.xcassets */,
 				0A968F8F1FD97AE200ED6ED3 /* art.scnassets */,
+				0A968FC51FDA0BF200ED6ED3 /* Particles */,
+				0A968FC81FDA100400ED6ED3 /* Sounds */,
 			);
 			path = Assets;
 			sourceTree = "<group>";
@@ -155,9 +163,26 @@
 		0A968FC01FD99BE600ED6ED3 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				0A968F911FD97AE200ED6ED3 /* ViewController.swift */,
+				0A968F911FD97AE200ED6ED3 /* SceneViewController.swift */,
 			);
 			path = Controllers;
+			sourceTree = "<group>";
+		};
+		0A968FC51FDA0BF200ED6ED3 /* Particles */ = {
+			isa = PBXGroup;
+			children = (
+				0A968FC11FDA0BEA00ED6ED3 /* spark.png */,
+				0A968FC21FDA0BEB00ED6ED3 /* magicEffect.scnp */,
+			);
+			path = Particles;
+			sourceTree = "<group>";
+		};
+		0A968FC81FDA100400ED6ED3 /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				0A968FC61FDA100000ED6ED3 /* magicEffect.mp3 */,
+			);
+			path = Sounds;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -267,9 +292,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A968FC31FDA0BEB00ED6ED3 /* spark.png in Resources */,
 				0A968F901FD97AE200ED6ED3 /* art.scnassets in Resources */,
 				0A968F9A1FD97AE200ED6ED3 /* LaunchScreen.storyboard in Resources */,
+				0A968FC71FDA100000ED6ED3 /* magicEffect.mp3 in Resources */,
 				0A968F971FD97AE200ED6ED3 /* Assets.xcassets in Resources */,
+				0A968FC41FDA0BEB00ED6ED3 /* magicEffect.scnp in Resources */,
 				0A968F951FD97AE200ED6ED3 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -295,7 +323,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A968F921FD97AE200ED6ED3 /* ViewController.swift in Sources */,
+				0A968F921FD97AE200ED6ED3 /* SceneViewController.swift in Sources */,
 				0A968F8E1FD97AE200ED6ED3 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

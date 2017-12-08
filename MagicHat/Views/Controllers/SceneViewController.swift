@@ -10,7 +10,7 @@ import UIKit
 import SceneKit
 import ARKit
 
-class ViewController: UIViewController {
+class SceneViewController: UIViewController {
 
     @IBOutlet var sceneView: ARSCNView!
     @IBOutlet weak var magicButton: UIButton!
@@ -18,13 +18,16 @@ class ViewController: UIViewController {
     
     fileprivate var hatNode: SCNNode?
     fileprivate var planeNode: SCNNode?
+    fileprivate var ballsInTheHat: [SCNNode] = []
+    fileprivate var magicEffectSound: SCNAudioSource!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        sceneView.delegate = self
-        sceneView.showsStatistics = true
-        sceneView.scene = SCNScene()
+        configureScene()
+        loadSounds()
+        updateMagicButton()
+        updateThrowBallButton()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -45,13 +48,21 @@ class ViewController: UIViewController {
         sceneView.session.pause()
     }
     
+    fileprivate func configureScene() {
+        sceneView.delegate = self
+        sceneView.showsStatistics = true
+        sceneView.scene = SCNScene()
+    }
+    
     // MARK: - Events
     
     @IBAction func magicButtonPressed(_ sender: Any) {
+        clearHat()
     }
     
     @IBAction func throwBallButtonPressed(_ sender: Any) {
         shootBall()
+        updateMagicButton()
     }
     
     @IBAction func didTap(_ sender: UITapGestureRecognizer) {
@@ -64,12 +75,24 @@ class ViewController: UIViewController {
         if let result = results.first {
             placeHat(result)
         }
+        
+        updateThrowBallButton()
+    }
+    
+    fileprivate func updateMagicButton() {
+        self.magicButton.isEnabled = ballsInTheHat.count > 0
+        self.magicButton.alpha = ballsInTheHat.count > 0 ? 1 : 0.5
+    }
+    
+    fileprivate func updateThrowBallButton() {
+        self.throwBallButton.isEnabled = hatNode != nil
+        self.throwBallButton.alpha = hatNode != nil ? 1 : 0.5
     }
 }
 
 // MARK: - Hat Configuration
 
-extension ViewController {
+extension SceneViewController {
     
     private func placeHat(_ result: ARHitTestResult) {
         
@@ -95,17 +118,41 @@ extension ViewController {
         guard let node = SCNReferenceNode(url: url) else { return nil }
         
         node.load()
-        
-        // Position scene
         node.position = position
         
         return node
+    }
+    
+    private func createMagicEffectOnHat() {
+        guard let url = Bundle.main.url(forResource: "art.scnassets/magicEffect", withExtension: "scn") else {
+            NSLog("Could not find magic effect scene")
+            return
+        }
+        guard let node = SCNReferenceNode(url: url) else { return }
+        
+        node.load()
+        
+        if let hatNode = hatNode {
+            node.position = hatNode.position
+        }
+        
+        sceneView.scene.rootNode.addChildNode(node)
+    }
+    
+    fileprivate func clearHat() {
+        createMagicEffectOnHat()
+        
+        for ball in ballsInTheHat {
+            ball.removeFromParentNode()
+        }
+        
+        updateMagicButton()
     }
 }
 
 // MARK: - Ball Configuration
 
-extension ViewController {
+extension SceneViewController {
     
     fileprivate func shootBall() {
         guard let ballNode = createBallFromScene() else {
@@ -122,6 +169,8 @@ extension ViewController {
         ballNode.physicsBody?.applyForce(ballDirection, asImpulse: true)
         
         sceneView.scene.rootNode.addChildNode(ballNode)
+        
+        ballsInTheHat.append(ballNode)
     }
     
     private func createBallFromScene() -> SCNNode? {
@@ -137,9 +186,24 @@ extension ViewController {
     }
 }
 
+// MARK: - Sound configuration
+
+extension SceneViewController {
+    
+    fileprivate func loadSounds() {
+        magicEffectSound = SCNAudioSource(fileNamed: "art.scnassets/magicEffect.mp3")
+        magicEffectSound.load()
+    }
+    
+    private func playMagicEffectSound(toNode node: SCNNode) {
+        let action = SCNAction.playAudio(magicEffectSound, waitForCompletion: false)
+        node.runAction(action)
+    }
+}
+
 // MARK: - ARSCNViewDelegate
 
-extension ViewController: ARSCNViewDelegate {
+extension SceneViewController: ARSCNViewDelegate {
     
     func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
         // Create an SCNNode for a detect ARPlaneAnchor
@@ -186,9 +250,32 @@ extension ViewController: ARSCNViewDelegate {
     }
 }
 
+extension SceneViewController: SKPhysicsContactDelegate {
+    
+    func didBegin(_ contact: SKPhysicsContact) {
+//        CollisionCategory contactMask =
+//            contact.nodeA.physicsBody.categoryBitMask | contact.nodeB.physicsBody.categoryBitMask;
+//
+//        // first, sort out what kind of collision
+//        if (contactMask == (CollisionCategoryMissile | CollisionCategoryRocket)) {
+//            // next, sort out which body is the missile and which is the rocket
+//            // and do something about it
+//            if (contact.nodeA.physicsBody.categoryBitMask == CollisionCategoryMissile) {
+//                [self hitRocket:contact.nodeB withMissile:contact.nodeA];
+//            } else {
+//                [self hitRocket:contact.nodeA withMissile:contact.nodeB];
+//            }
+//        } else if (contactMask == (CollisionCategoryMissile | CollisionCategoryAsteroid)) {
+//            // ... and so on ...
+//        }
+    }
+    
+    
+}
+
 // MARK: - User direction
 
-extension ViewController {
+extension SceneViewController {
     
     func getCameraDirection() -> SCNVector3 {
         if let frame = self.sceneView.session.currentFrame {
