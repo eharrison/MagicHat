@@ -18,7 +18,6 @@ class SceneViewController: UIViewController {
     
     fileprivate var hatNode: SCNNode?
     fileprivate var planeNode: SCNNode?
-    fileprivate var ballsInTheHat: [SCNNode] = []
     fileprivate var magicEffectSound: SCNAudioSource!
     
     override func viewDidLoad() {
@@ -51,6 +50,7 @@ class SceneViewController: UIViewController {
     fileprivate func configureScene() {
         sceneView.delegate = self
         sceneView.showsStatistics = true
+        sceneView.debugOptions = [.showPhysicsShapes]
         sceneView.scene = SCNScene()
         sceneView.scene.physicsWorld.contactDelegate = self
     }
@@ -63,7 +63,6 @@ class SceneViewController: UIViewController {
     
     @IBAction func throwBallButtonPressed(_ sender: Any) {
         shootBall()
-        updateMagicButton()
     }
     
     @IBAction func didTap(_ sender: UITapGestureRecognizer) {
@@ -74,16 +73,22 @@ class SceneViewController: UIViewController {
         let location = sender.location(in: sceneView)
         let results = sceneView.hitTest(location, types: .existingPlaneUsingExtent)
         if let result = results.first {
-            placeHat(result)
+            let transform = result.worldTransform
+            let position = SCNVector3Make(transform.columns.3.x, transform.columns.3.y, transform.columns.3.z)
+            
+            placeHat(planePosition: position,
+                     transform: transform)
+            
             addFloor(withResult: result)
         }
         
         updateThrowBallButton()
+        updateMagicButton()
     }
     
     fileprivate func updateMagicButton() {
-        self.magicButton.isEnabled = ballsInTheHat.count > 0
-        self.magicButton.alpha = ballsInTheHat.count > 0 ? 1 : 0.5
+        self.magicButton.isEnabled = hatNode != nil
+        self.magicButton.alpha = hatNode != nil ? 1 : 0.5
     }
     
     fileprivate func updateThrowBallButton() {
@@ -96,18 +101,12 @@ class SceneViewController: UIViewController {
 
 extension SceneViewController {
     
-    private func placeHat(_ result: ARHitTestResult) {
-        
-        // Get transform of result
-        let transform = result.worldTransform
-        
-        // Get position from transform (4th column of transformation matrix)
-        let planePosition = SCNVector3Make(transform.columns.3.x, transform.columns.3.y, transform.columns.3.z)
-        
+    private func placeHat(planePosition: SCNVector3, transform: matrix_float4x4) {
         // can only add one hat
         hatNode?.removeFromParentNode()
         hatNode = createHatFromScene(planePosition)
         hatNode?.name = "hat"
+        planeNode?.removeFromParentNode()
         if let hatNode = hatNode {
             sceneView.scene.rootNode.addChildNode(hatNode)
         }
@@ -127,34 +126,47 @@ extension SceneViewController {
     }
     
     private func createMagicEffectOnHat() {
-        guard let url = Bundle.main.url(forResource: "art.scnassets/magicEffect", withExtension: "scn") else {
-            NSLog("Could not find magic effect scene")
-            return
-        }
-        guard let node = SCNReferenceNode(url: url) else { return }
-        
-        node.load()
-        
-        if let hatNode = hatNode {
-            node.position = hatNode.position
-        }
-        
-        sceneView.scene.rootNode.addChildNode(node)
-    }
-    
-    fileprivate func addBallToHat(_ node: SCNNode) {
-        playMagicEffectSound(toNode: hatNode)
-        ballsInTheHat.append(node)
+        guard let hatNode = sceneView.scene.rootNode.childNode(withName: "hat", recursively: true) else { return }
+        let sparkles = SCNParticleSystem(named: "magicEffect", inDirectory: nil)!
+        hatNode.addParticleSystem(sparkles)
     }
     
     fileprivate func clearHat() {
         createMagicEffectOnHat()
         
-        for ball in ballsInTheHat {
-            ball.removeFromParentNode()
+        sceneView.scene.rootNode.enumerateChildNodes { (node, _) in
+            if isBallInsideHat(node) {
+                node.removeFromParentNode()
+            }
+        }
+    }
+    
+    fileprivate var hatHasBallsInside: Bool {
+        for node in sceneView.scene.rootNode.childNodes where isBallInsideHat(node) {
+            return true
         }
         
-        updateMagicButton()
+        return false
+    }
+    
+    private func isBallInsideHat(_ node: SCNNode) -> Bool {
+        
+        guard !node.isHat else {
+            return false
+        }
+        
+        guard let hat = sceneView.scene.rootNode.childNode(withName: "hat", recursively: true) else {
+            return false
+        }
+        
+        let min = hat.convertPosition((hat.boundingBox.min), to: sceneView.scene.rootNode)
+        let max = hat.convertPosition((hat.boundingBox.max), to: sceneView.scene.rootNode)
+        
+        if node.presentation.position.x < 0.99*(max.x) && node.presentation.position.x > 0.99*(min.x) && node.presentation.position.y < 0.99*(max.y) && node.presentation.position.y > 0.99*(min.y) && node.presentation.position.z < 0.99*(max.z) && node.presentation.position.z > 0.99*(min.z) {
+            return true
+        }
+        
+        return false
     }
 }
 
@@ -297,8 +309,8 @@ extension SceneViewController: SCNPhysicsContactDelegate {
                 //remove name so that we don't have the same ball hitting over and over again
                 identifiedNodes.0.name = nil
                 
-                if identifiedNodes.1.name == "body" || identifiedNodes.1.name == "base" {
-                    addBallToHat(identifiedNodes.0)
+                if identifiedNodes.1.isHat {
+                    playMagicEffectSound(toNode: hatNode)
                 }
             }
         }
@@ -306,17 +318,30 @@ extension SceneViewController: SCNPhysicsContactDelegate {
     }
     
     fileprivate func ballNode(withContact contact: SCNPhysicsContact) -> (SCNNode, SCNNode)? {
-        if contact.nodeA.name == "ball" {
+        if contact.nodeA.isBall {
             return (contact.nodeA, contact.nodeB)
         }
         
-        if contact.nodeB.name == "ball" {
+        if contact.nodeB.isBall {
             return (contact.nodeB, contact.nodeA)
         }
         
         return nil
     }
     
+}
+
+// MARK: - SCNNode extension
+
+extension SCNNode {
+    
+    var isBall: Bool {
+        return self.name == "ball"
+    }
+    
+    var isHat: Bool {
+        return self.name == "body" || self.name == "base" || self.name == "top" || self.name == "hat"
+    }
 }
 
 // MARK: - User direction
@@ -330,25 +355,5 @@ extension SceneViewController {
             return dir
         }
         return SCNVector3(0, 0, -1)
-    }
-}
-
-// MARK: - Ball inside bounding box verification
-
-extension SceneViewController {
-    func isBallInsideBoundingBox(_ node: SCNNode) -> Bool {
-        
-        guard let hat = sceneView.scene.rootNode.childNode(withName: "hat", recursively: true) else {
-            return false
-        }
-        
-        let min = hat.convertPosition((hat.boundingBox.min), to: sceneView.scene.rootNode)
-        let max = hat.convertPosition((hat.boundingBox.max), to: sceneView.scene.rootNode)
-        
-        if node.presentation.position.x < 0.99*(max.x) && node.presentation.position.x > 0.99*(min.x) && node.presentation.position.y < 0.99*(max.y) && node.presentation.position.y > 0.99*(min.y) && node.presentation.position.z < 0.99*(max.z) && node.presentation.position.z > 0.99*(min.z) {
-            return true
-        }
-        
-        return false
     }
 }
