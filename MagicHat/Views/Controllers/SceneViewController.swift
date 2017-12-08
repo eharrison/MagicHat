@@ -52,6 +52,7 @@ class SceneViewController: UIViewController {
         sceneView.delegate = self
         sceneView.showsStatistics = true
         sceneView.scene = SCNScene()
+        sceneView.scene.physicsWorld.contactDelegate = self
     }
     
     // MARK: - Events
@@ -105,6 +106,7 @@ extension SceneViewController {
         // can only add one hat
         hatNode?.removeFromParentNode()
         hatNode = createHatFromScene(planePosition)
+        hatNode?.name = "hat"
         if let hatNode = hatNode {
             sceneView.scene.rootNode.addChildNode(hatNode)
         }
@@ -139,6 +141,11 @@ extension SceneViewController {
         sceneView.scene.rootNode.addChildNode(node)
     }
     
+    fileprivate func addBallToHat(_ node: SCNNode) {
+        playMagicEffectSound(toNode: hatNode)
+        ballsInTheHat.append(node)
+    }
+    
     fileprivate func clearHat() {
         createMagicEffectOnHat()
         
@@ -168,9 +175,9 @@ extension SceneViewController {
         let ballDirection = direction
         ballNode.physicsBody?.applyForce(ballDirection, asImpulse: true)
         
-        sceneView.scene.rootNode.addChildNode(ballNode)
+        ballNode.name = "ball"
         
-        ballsInTheHat.append(ballNode)
+        sceneView.scene.rootNode.addChildNode(ballNode)
     }
     
     private func createBallFromScene() -> SCNNode? {
@@ -191,11 +198,15 @@ extension SceneViewController {
 extension SceneViewController {
     
     fileprivate func loadSounds() {
-        magicEffectSound = SCNAudioSource(fileNamed: "art.scnassets/magicEffect.mp3")
+        magicEffectSound = SCNAudioSource(fileNamed: "magicEffect.mp3")
         magicEffectSound.load()
     }
     
-    private func playMagicEffectSound(toNode node: SCNNode) {
+    private func playMagicEffectSound(toNode node: SCNNode?) {
+        guard let node = node else {
+            return
+        }
+        
         let action = SCNAction.playAudio(magicEffectSound, waitForCompletion: false)
         node.runAction(action)
     }
@@ -241,7 +252,6 @@ extension SceneViewController: ARSCNViewDelegate {
     
     func sessionWasInterrupted(_ session: ARSession) {
         // Inform the user that the session has been interrupted, for example, by presenting an overlay
-        
     }
     
     func sessionInterruptionEnded(_ session: ARSession) {
@@ -250,26 +260,38 @@ extension SceneViewController: ARSCNViewDelegate {
     }
 }
 
-extension SceneViewController: SKPhysicsContactDelegate {
+extension SceneViewController: SCNPhysicsContactDelegate {
     
-    func didBegin(_ contact: SKPhysicsContact) {
-//        CollisionCategory contactMask =
-//            contact.nodeA.physicsBody.categoryBitMask | contact.nodeB.physicsBody.categoryBitMask;
-//
-//        // first, sort out what kind of collision
-//        if (contactMask == (CollisionCategoryMissile | CollisionCategoryRocket)) {
-//            // next, sort out which body is the missile and which is the rocket
-//            // and do something about it
-//            if (contact.nodeA.physicsBody.categoryBitMask == CollisionCategoryMissile) {
-//                [self hitRocket:contact.nodeB withMissile:contact.nodeA];
-//            } else {
-//                [self hitRocket:contact.nodeA withMissile:contact.nodeB];
-//            }
-//        } else if (contactMask == (CollisionCategoryMissile | CollisionCategoryAsteroid)) {
-//            // ... and so on ...
-//        }
+    func physicsWorld(_ world: SCNPhysicsWorld, didBegin contact: SCNPhysicsContact) {
+        
+        if let identifiedNodes = ballNode(withContact: contact) {
+            let velocity = identifiedNodes.0.physicsBody?.velocity.y ?? 0
+            print("Collision with ball and \(identifiedNodes.1.name ?? "") with y velocity \(velocity)")
+            
+            // velocity is less than one, it's stopping
+            if velocity < 1 {
+                //remove name so that we don't have the same ball hitting over and over again
+                identifiedNodes.0.name = nil
+                
+                if identifiedNodes.1.name == "body" || identifiedNodes.1.name == "base" {
+                    addBallToHat(identifiedNodes.0)
+                }
+            }
+        }
+        
     }
     
+    fileprivate func ballNode(withContact contact: SCNPhysicsContact) -> (SCNNode, SCNNode)? {
+        if contact.nodeA.name == "ball" {
+            return (contact.nodeA, contact.nodeB)
+        }
+        
+        if contact.nodeB.name == "ball" {
+            return (contact.nodeB, contact.nodeA)
+        }
+        
+        return nil
+    }
     
 }
 
