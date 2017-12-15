@@ -50,7 +50,7 @@ class SceneViewController: UIViewController {
     fileprivate func configureScene() {
         sceneView.delegate = self
         sceneView.showsStatistics = true
-        sceneView.debugOptions = [.showPhysicsShapes]
+        //sceneView.debugOptions = [.showPhysicsShapes]
         sceneView.scene = SCNScene()
         sceneView.scene.physicsWorld.contactDelegate = self
     }
@@ -108,7 +108,6 @@ class SceneViewController: UIViewController {
     }
     
     fileprivate func updateUI() {
-        
         updateMagicButton()
         updateThrowBallButton()
         updateInstructions()
@@ -123,9 +122,10 @@ extension SceneViewController {
         // can only add one hat
         hatNode?.removeFromParentNode()
         hatNode = createHatFromScene(planePosition)
-        hatNode?.name = "hat"
+        hatNode?.name = NodeNames.hat.rawValue
         if let hatNode = hatNode {
             sceneView.scene.rootNode.addChildNode(hatNode)
+            removePlaneIndicator()
         }
     }
     
@@ -152,7 +152,7 @@ extension SceneViewController {
         createMagicEffectOnHat()
         
         sceneView.scene.rootNode.enumerateChildNodes { (node, _) in
-            if isBallInsideHat(node) {
+            if !node.isFloor, isBallInsideHat(node) {
                 node.removeFromParentNode()
             }
         }
@@ -204,7 +204,7 @@ extension SceneViewController {
         let ballDirection = cameraDirection
         ballNode.physicsBody?.applyForce(ballDirection, asImpulse: true)
         
-        ballNode.name = "ball"
+        ballNode.name = NodeNames.ball.rawValue
         
         sceneView.scene.rootNode.addChildNode(ballNode)
     }
@@ -230,6 +230,7 @@ extension SceneViewController {
         let transform = result.worldTransform
         let planePosition = SCNVector3Make(transform.columns.3.x, transform.columns.3.y, transform.columns.3.z)
         let floorNode = createFloorForScene(inPosition: planePosition)!
+        floorNode.name = NodeNames.floor.rawValue
         sceneView.scene.rootNode.addChildNode(floorNode)
     }
     
@@ -242,6 +243,14 @@ extension SceneViewController {
         floorNode.position = position
         
         return floorNode
+    }
+    
+    fileprivate func removePlaneIndicator() {
+        sceneView.scene.rootNode.enumerateChildNodes { (node, _) in
+            if !node.isFloor, !node.isHat {
+                node.removeFromParentNode()
+            }
+        }
     }
     
 }
@@ -367,10 +376,23 @@ extension SceneViewController {
 extension SCNNode {
     
     var isBall: Bool {
-        return self.name == "ball"
+        return self.name == NodeNames.ball.rawValue
     }
     
     var isHat: Bool {
-        return self.name == "body" || self.name == "base" || self.name == "top" || self.name == "hat"
+        return self.name == NodeNames.body.rawValue || self.name == NodeNames.base.rawValue || self.name == NodeNames.top.rawValue || self.name == NodeNames.hat.rawValue
     }
+    
+    var isFloor: Bool {
+        return self.name == NodeNames.floor.rawValue
+    }
+}
+
+enum NodeNames: String {
+    case ball
+    case body
+    case base
+    case top
+    case hat
+    case floor
 }
