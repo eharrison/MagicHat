@@ -32,6 +32,7 @@
                                     <constraint firstAttribute="height" constant="50" id="tvP-PX-OxE"/>
                                 </constraints>
                                 <state key="normal" title="Magic"/>
+                                <state key="selected" title="Reverse Magic"/>
                                 <connections>
                                     <action selector="magicButtonPressed:" destination="BV1-FR-VrT" eventType="touchUpInside" id="Da0-bc-MAv"/>
                                 </connections>

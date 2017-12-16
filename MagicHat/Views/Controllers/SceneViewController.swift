@@ -58,7 +58,13 @@ class SceneViewController: UIViewController {
     // MARK: - Events
     
     @IBAction func magicButtonPressed(_ sender: Any) {
-        clearHat()
+        magicButton.isSelected = !magicButton.isSelected
+        
+        if magicButton.isSelected {
+            hideBallsInHat()
+        } else {
+            showBallsInHat()
+        }
     }
     
     @IBAction func throwBallButtonPressed(_ sender: Any) {
@@ -148,14 +154,34 @@ extension SceneViewController {
         hatNode.addParticleSystem(sparkles)
     }
     
-    fileprivate func clearHat() {
+    fileprivate func hideBallsInHat() {
         createMagicEffectOnHat()
+        
+        SCNTransaction.begin()
         
         sceneView.scene.rootNode.enumerateChildNodes { (node, _) in
             if !node.isFloor, isBallInsideHat(node) {
-                node.removeFromParentNode()
+                node.opacity = 0
             }
         }
+        
+        SCNTransaction.animationDuration = 1
+        SCNTransaction.commit()
+    }
+    
+    fileprivate func showBallsInHat() {
+        createMagicEffectOnHat()
+        
+        SCNTransaction.begin()
+        
+        sceneView.scene.rootNode.enumerateChildNodes { (node, _) in
+            if !node.isFloor, isBallInsideHat(node) {
+                node.opacity = 1
+            }
+        }
+        
+        SCNTransaction.animationDuration = 1
+        SCNTransaction.commit()
     }
     
     fileprivate var hatHasBallsInside: Bool {
