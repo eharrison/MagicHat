@@ -25,3 +25,5 @@ This repository contains the final exercise of Udacity's "Learn ARKit with Swift
 <p align="left"><img src="https://github.com/eharrison/MagicHat/blob/master/Screenshots/FullHat.PNG" width="200"/></p>
 - Tap 'Magic' to disappear with balls in the hat
 <p align="left"><img src="https://github.com/eharrison/MagicHat/blob/master/Screenshots/EmptyHat.PNG" width="200"/></p>
+- Tap "Reverse Magic" to show the balls back in the hat
+<p align="left"><img src="https://github.com/eharrison/MagicHat/blob/master/Screenshots/FullHat.PNG" width="200"/></p>
