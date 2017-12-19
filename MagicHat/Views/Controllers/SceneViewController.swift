@@ -162,6 +162,7 @@ extension SceneViewController {
         sceneView.scene.rootNode.enumerateChildNodes { (node, _) in
             if !node.isFloor, isBallInsideHat(node) {
                 node.opacity = 0
+                node.isHidden = true
             }
         }
         
@@ -176,6 +177,7 @@ extension SceneViewController {
         
         sceneView.scene.rootNode.enumerateChildNodes { (node, _) in
             if !node.isFloor, isBallInsideHat(node) {
+                node.isHidden = false
                 node.opacity = 1
             }
         }
